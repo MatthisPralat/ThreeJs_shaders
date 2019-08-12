@@ -1,0 +1,106 @@
+<body>
+    <div id="container"></div>
+    <script src="../js/three.min.js"></script>
+
+    <script id="vertexShader" type="x-shader/x-vertex">
+        void main() {
+            gl_Position = vec4( position, 1.0 );
+        }
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+        uniform vec2 u_resolution;
+        uniform float u_time;
+
+        void main() {
+            vec2 st = gl_FragCoord.xy/u_resolution.xy;
+            gl_FragColor=vec4(st.x,st.y,0.0,1.0);
+        }
+    </script>
+
+
+    <script>
+        //Mes variables 
+        var container;
+        var camera, scene, renderer;
+        var uniforms;
+
+        //Les fonctions
+        init();
+        animate();
+
+
+        // initialisation
+        // Dans un container je vais dessiner:
+        // 1- Une camera à 1 de distance en Z 
+        // 2- Une Plane, Surface plane
+        // 3- Me material que je vais passer à ma plane
+        //      - Celui ci va prendre un ShaderMaterial
+        //      - Cad un material qui va prendre le shader que je lui ai créé
+        //      - Il va aussi recupéré les uniform que je vais lui passer (Position de la sourie, Taille de l'écran, Temps)
+        
+        
+        function init() {
+            container = document.getElementById( 'container' );
+            
+            camera = new THREE.Camera();
+            camera.position.z = 1;
+            scene = new THREE.Scene();
+
+            var geometry = new THREE.PlaneBufferGeometry( 2, 2 );
+
+            uniforms = {
+                u_time: { type: "f", value: 1.0 },
+                u_resolution: { type: "v2", value: new THREE.Vector2() },
+                u_mouse: { type: "v2", value: new THREE.Vector2() }
+            };
+
+            // c'est ici dans mon material que je vais passer 
+            var material = new THREE.ShaderMaterial( {
+                uniforms: uniforms,
+                vertexShader: document.getElementById( 'vertexShader' ).textContent,
+                fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+            } );
+            
+            // ici j'ajoute ma plane avec le material qui à un shader.
+            var mesh = new THREE.Mesh( geometry, material );
+            scene.add( mesh );
+
+            //Je dessine le rendu avec la taille et le canvas
+            renderer = new THREE.WebGLRenderer();
+            renderer.setPixelRatio( window.devicePixelRatio );
+            container.appendChild( renderer.domElement );
+
+            //J'ajoute un listener pour le resize de ma fenetre
+            onWindowResize();
+            window.addEventListener( 'resize', onWindowResize, false );
+
+            // Je passe Le mouvement de ma sourie dans mon Uniform U_Mouse
+            document.onmousemove = function(e){
+              uniforms.u_mouse.value.x = e.pageX
+              uniforms.u_mouse.value.y = e.pageY
+            }
+        }
+
+        // Je passe la taille de ma fenetre dans le Uniform U_Resolution
+        function onWindowResize( event ) {
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            uniforms.u_resolution.value.x = renderer.domElement.width;
+            uniforms.u_resolution.value.y = renderer.domElement.height;
+        }
+
+        // Apres mon init j'appelle animate, qui va à chaque frame relancer cette meme fonction.
+        // Elle va aussi Lancer Render à chaque Frame
+        function animate() {
+            requestAnimationFrame( animate );
+            render();
+        }
+
+		// Lors de mon rendu, à chaque Frame j'ajoute 0.05 à mon uniform U_time 
+		// Et je met à jours ma scene et ma camera.
+        function render() {
+            uniforms.u_time.value += 0.05;
+            renderer.render( scene, camera );
+        }
+    </script>
+</body>

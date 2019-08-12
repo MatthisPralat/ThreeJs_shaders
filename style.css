@@ -1,0 +1,20 @@
+html {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+section {
+    width: 300px;
+    height: 300px;
+    display: inline-block;
+}
+
+iframe {
+    width:300px;
+    height: 300px;
+    margin:0;
+    padding:0;
+    text-align: center;
+    margin: auto;
+    display: inline-block;
+    transition: all 0.3s linear;
+}

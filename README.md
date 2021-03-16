@@ -1,6 +1,7 @@
 # ThreeJs_shaders
 
-Mise en place minium de tree.js pour jouer avec des shader en glsl
+TreeJs_shaders est simplement la mise en place minimum de tree.js pour jouer avec des shader en glsl
+On créé nos shaders dans le fichier exemple. Et avec wamp ou sur son site perso la page index va lister tous les shaders dans une gallerie
 
 
 
